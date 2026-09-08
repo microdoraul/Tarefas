@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class Campo_incluir(ft.Row):
     def __int__(self, texto_tarefa):
         super().__init__()

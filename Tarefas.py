@@ -1,10 +1,22 @@
 import flet as ft
+import sqlite3
 
 def main(pagina: ft.Page):
     # Configurações visuais da janela principal
     pagina.title = "Analisador de Tarefas"
     pagina.bgcolor = "#e3f2fd"
     pagina.horizontal_alignment = "center"
+
+
+    conexao=sqlite3.connect("bd_tarefas.sqlite")
+    cursor = conexao.cursor()
+    cursor.execute("""create table if not exists tarefas(
+     cod_tarefas integer primariy key autoincremente,
+     tarefa text,
+     status text);
+     """)
+    conexao.commit()
+    conexao.close()
 
     # Título grande no topo da tela
     titulo = ft.Text(
@@ -23,7 +35,6 @@ def main(pagina: ft.Page):
         expand=True
     )
 
-    co
 
     # Coluna visual que vai guardar os textos das tarefas na tela
     lista_visual = ft.Column()
