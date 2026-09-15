@@ -1,8 +1,10 @@
 import flet as ft
 import sqlite3 
 from classe_campo_incluir import Campo_incluir
-from database.conexao import criar_banco_dados
+from database.conexao import conectar_bd
 from model import model_tarefa
+from database.create_database import criar_banco_dados
+
 
 def main(page:ft.Page):
     page.title = "Armazenamendo de Tarefas"
@@ -11,47 +13,31 @@ def main(page:ft.Page):
     page.window.width = 800
     page.window.height = 800
 
-    #criando a tabela de tarefas no banco de dados SQLITE3
-    conexao, cursor = conectar_bd()
-    cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS tarefas( 
-                   cod_tarefas INTEGER PRIMARY KEY AUTOINCREMENT,
-                   tarefa TEXT,
-                   status TEXT);
-                   """)
-    conexao.commit() 
-    conexao.close()
+    criar_banco_dados()
 
+   
     title = ft.Text(value="Analisardor De Tarefas ✔",size=30,font_family="Arial",)
     lista_incluir = []
+    
     def excluir_campo (campo_tarefa):
         lista_incluir.remove(campo_tarefa)
-
+       
     def adicionar_campo():
         model_tarefa.inserir_tarefa(campo_tarefas.value)
         novo_campo = Campo_incluir(texto_tarefa=campo_tarefas.value,
                                    funcao_excluir=excluir_campo)
         lista_incluir.append(novo_campo)
-        
-
-        #criando a tabela de tarefas no banco de dados SQLITE3
-        conexao.cursor = conectar_bd()
-        cursor.execute("""
-                    INSERT INTO tarefas (tarefa, status)
-                       VALUES (?, ?);
-                   """,
-                   [campo_tarefas.value, "PENDENTE"])
-        conexao.commit() 
-        conexao.close()
         campo_tarefas.value = ""
 
+    tarefas_vindas_do_banco_de_dados = model_tarefa.recuperar_terefas()
+    for tarefa in tarefas_vindas_do_banco_de_dados:
+         novo_campo = Campo_incluir(texto_tarefa=tarefa(1),
+                                    funcao_excluir = excluir_campo
+                               )
 
 
-
-    button_excluir = ft.FloatingActionButton(icon=ft.Icon(ft.Icons.DELETE_FOREVER,
-                                                          color="#000"),
-                                                          bgcolor="#fff",
-                                                          hover_color="#0000ff")
+        
+   
 
     button_incluir = ft.Button(content="Incluir",
                                on_click=adicionar_campo,)

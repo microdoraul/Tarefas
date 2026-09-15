@@ -1,4 +1,5 @@
-from database import conectar_bd
+from database.conexao import conectar_bd
+
 def inserir_tarefa(texto_tarefa):
     conexao, cursor = conectar_bd()
     cursor.execute(""" 
@@ -9,8 +10,11 @@ def inserir_tarefa(texto_tarefa):
     conexao.commit()
     conexao.close()
 
-    def recuperar_terefas():
-            conexao, cursor = conectar_bd()
-            cursor.execute("""
-                        seclet * from tarefas
+def recuperar_terefas():
+    conexao, cursor = conectar_bd()
+    cursor.execute("""
+                        select * from tarefas;
                         """)
+    tarefas = cursor.fetchall()
+    conexao.close()
+    return tarefas
