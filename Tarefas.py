@@ -1,68 +1,85 @@
 import flet as ft
-import sqlite3
+import sqlite3 
+from classe_campo_incluir import Campo_incluir
 
-def main(pagina: ft.Page):
-    # Configurações visuais da janela principal
-    pagina.title = "Analisador de Tarefas"
-    pagina.bgcolor = "#e3f2fd"
-    pagina.horizontal_alignment = "center"
+def main(page:ft.Page):
+    page.title = "Armazenamendo de Tarefas"
+    page.bgcolor = "#44ff00"
+    page.horizontal_alignment = "center"
+    page.window.width = 800
+    page.window.height = 800
 
-
-    conexao=sqlite3.connect("bd_tarefas.sqlite")
-    cursor = conexao.cursor()
-    cursor.execute("""create table if not exists tarefas(
-     cod_tarefas integer primariy key autoincremente,
-     tarefa text,
-     status text);
-     """)
-    conexao.commit()
+    #criando a tabela de tarefas no banco de dados SQLITE3
+    conexao = sqlite3.connect("bd_tarefas.sqlite")
+    cursor = conexao.cursor() #criando cursor 
+    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tarefas( 
+                   cod_tarefas INTEGER PRIMARY KEY AUTOINCREMENT,
+                   tarefa TEXT,
+                   status TEXT);
+                   """)
+    conexao.commit() 
     conexao.close()
 
-    # Título grande no topo da tela
-    titulo = ft.Text(
-        value="Analisador de Tarefas",
-        size=30,
-        font_family="Arial",
-        color="#1565c0",
-    )
+    title = ft.Text(value="Analisardor De Tarefas ✔",size=30,font_family="Arial",)
+    lista_incluir = []
 
-    # Caixa de texto onde você digita
-    campo_analisador = ft.TextField(
-        label="Digite sua tarefa",
-        bgcolor="#9691f2",
-        border_radius=30,
-        border_color="#000000",
-        expand=True
-    )
+    def adicionar_campo():
+        novo_campo = Campo_incluir(texto_tarefa=campo_tarefas.value)
+        lista_incluir.append(novo_campo)
+        
+
+        #criando a tabela de tarefas no banco de dados SQLITE3
+        conexao = sqlite3.connect("bd_tarefas.sqlite")
+        cursor = conexao.cursor() #criando cursor 
+        cursor.execute("""
+                    INSERT INTO tarefas (tarefa, status)
+                       VALUES (?, ?);
+                   """,
+                   [campo_tarefas.value, "PENDENTE"])
+        conexao.commit() 
+        conexao.close()
+        campo_tarefas.value = ""
 
 
-    # Coluna visual que vai guardar os textos das tarefas na tela
-    lista_visual = ft.Column()
 
-    # Função que é chamada ao clicar no botão
-    def adicionar_tarefa(e):
-        if campo_analisador.value:
-            # Adiciona o texto digitado como um novo Text dentro da coluna visual
-            lista_visual.controls.append(ft.Text(value=campo_analisador.value, size=18))
-            campo_analisador.value = ""  # Limpa o campo
-            pagina.update()  # Atualiza a tela
 
-    # Botão de incluir
-    botao_analisar = ft.ElevatedButton(
-        content=ft.Text("INCLUIR"), 
-        on_click=adicionar_tarefa
-    )
+    button_excluir = ft.FloatingActionButton(icon=ft.Icon(ft.Icons.DELETE_FOREVER,
+                                                          color="#000"),
+                                                          bgcolor="#fff",
+                                                          hover_color="#0000ff")
 
-    # Linha que junta a caixa de texto e o botão lado a lado
-    linha_entrada = ft.Row(controls=[campo_analisador, botao_analisar])
+    button_incluir = ft.Button(content="Incluir",
+                               on_click=adicionar_campo,)
+    
 
-    # Elementos que vão aparecer na tela
-    pagina.controls = [
-        titulo,
-        linha_entrada,
-        lista_visual
-    ]
+    campo_tarefas = ft.TextField(value="",
+                                 label="Tarefas",
+                                 text_align="center",
+                                 on_submit=adicionar_campo)
 
-    pagina.update()
+    
+
+    linha_começo = ft.Row(controls=[campo_tarefas, button_incluir],
+                          alignment="center",
+                          spacing=50)
+    
+    container = ft.Container(content=linha_começo,
+                             bgcolor="#1adba4",
+                             padding=30,
+                             border_radius=20,
+                             width=550,
+                             height=100)
+
+    coluna_tarefas = ft.Column(controls=lista_incluir,
+                               horizontal_alignment="center")
+
+
+
+
+
+    page.controls = [title,container, coluna_tarefas]
+    page.spacing = 45
+    page.update()
 
 ft.run(main)
