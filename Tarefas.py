@@ -1,6 +1,7 @@
 import flet as ft
 import sqlite3 
 from classe_campo_incluir import Campo_incluir
+from database.conexao import criar_banco_dados
 
 def main(page:ft.Page):
     page.title = "Armazenamendo de Tarefas"
@@ -10,8 +11,7 @@ def main(page:ft.Page):
     page.window.height = 800
 
     #criando a tabela de tarefas no banco de dados SQLITE3
-    conexao = sqlite3.connect("bd_tarefas.sqlite")
-    cursor = conexao.cursor() #criando cursor 
+    conexao, cursor = conectar_bd()
     cursor.execute("""
                     CREATE TABLE IF NOT EXISTS tarefas( 
                    cod_tarefas INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,8 +30,7 @@ def main(page:ft.Page):
         
 
         #criando a tabela de tarefas no banco de dados SQLITE3
-        conexao = sqlite3.connect("bd_tarefas.sqlite")
-        cursor = conexao.cursor() #criando cursor 
+        conexao.cursor = conectar_bd()
         cursor.execute("""
                     INSERT INTO tarefas (tarefa, status)
                        VALUES (?, ?);
