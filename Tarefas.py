@@ -20,20 +20,25 @@ def main(page:ft.Page):
     lista_incluir = []
     
     def excluir_campo (campo_tarefa):
+        model_tarefa.deletar_tarefa(campo_tarefa.cod_tarefa)
         lista_incluir.remove(campo_tarefa)
+
        
     def adicionar_campo():
-        model_tarefa.inserir_tarefa(campo_tarefas.value)
-        novo_campo = Campo_incluir(texto_tarefa=campo_tarefas.value,
-                                   funcao_excluir=excluir_campo)
+        cod_tarefa = model_tarefa.inserir_tarefa(campo_tarefas.value)
+        novo_campo = Campo_incluir (texto_tarefa=campo_tarefas.value,
+                                   funcao_excluir=excluir_campo,
+                                   cod_tarefa = cod_tarefa)
         lista_incluir.append(novo_campo)
         campo_tarefas.value = ""
 
     tarefas_vindas_do_banco_de_dados = model_tarefa.recuperar_terefas()
     for tarefa in tarefas_vindas_do_banco_de_dados:
-         novo_campo = Campo_incluir(texto_tarefa=tarefa(1),
-                                    funcao_excluir = excluir_campo
-                               )
+         novo_campo = Campo_incluir(texto_tarefa=tarefa["tarefa"],
+                                    funcao_excluir = excluir_campo,
+                                    cod_tarefa=tarefa["cod_tarefas"])
+         lista_incluir.append(novo_campo)
+         
 
 
         

@@ -2,13 +2,14 @@ import flet as ft
 
 
 class Campo_incluir(ft.Row):
-    def __int__(self, texto_tarefa):
+    def __int__(self, texto_tarefa, funcao_excluir, cod_tarefa):
         super().__init__()
+        self.cod_tarefa =cod_tarefa
+        self.funcao_excluir = funcao_excluir
         self.caixa_texto = ft.TextField(
-            value=texto_tarefa,
+            value= texto_tarefa,
             label="insira o texto",
-            filled=True,
-        )
+            filled=True )
         self.caixa_selecao= ft.Checkbox(on_change=self.alterar_cor)
         self.amarzem = ft.Container(content=ft.Row(controls=[self.caixa_selecao,
                                                             self.caixa_texto]),
