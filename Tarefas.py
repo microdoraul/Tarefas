@@ -1,48 +1,55 @@
 import flet as ft
-import sqlite3 
 from classe_campo_incluir import Campo_incluir
+import sqlite3
 from database.conexao import conectar_bd
-from model import model_tarefa
 from database.create_database import criar_banco_dados
-
+from model import model_tarefa
 
 def main(page:ft.Page):
     page.title = "Armazenamendo de Tarefas"
-    page.bgcolor = "#44ff00"
+    page.bgcolor = "#ecdab3"
     page.horizontal_alignment = "center"
     page.window.width = 800
     page.window.height = 800
 
     criar_banco_dados()
 
-   
-    title = ft.Text(value="Analisardor De Tarefas ✔",size=30,font_family="Arial",)
+    title = ft.Text(value="Tarefas 📄",size=30,font_family="Arial",)
     lista_incluir = []
-    
-    def excluir_campo (campo_tarefa):
+
+
+    def excluir_campo(campo_tarefa):
         model_tarefa.deletar_tarefa(campo_tarefa.cod_tarefa)
         lista_incluir.remove(campo_tarefa)
 
-       
+
     def adicionar_campo():
-        cod_tarefa = model_tarefa.inserir_tarefa(campo_tarefas.value)
-        novo_campo = Campo_incluir (texto_tarefa=campo_tarefas.value,
+        cod_tarefa= model_tarefa.inserir_tarefa(campo_tarefas.value)
+
+        novo_campo = Campo_incluir(texto_tarefa=campo_tarefas.value,
                                    funcao_excluir=excluir_campo,
-                                   cod_tarefa = cod_tarefa)
+                                   cod_tarefa=cod_tarefa)
         lista_incluir.append(novo_campo)
-        campo_tarefas.value = ""
-
-    tarefas_vindas_do_banco_de_dados = model_tarefa.recuperar_terefas()
-    for tarefa in tarefas_vindas_do_banco_de_dados:
-         novo_campo = Campo_incluir(texto_tarefa=tarefa["tarefa"],
-                                    funcao_excluir = excluir_campo,
-                                    cod_tarefa=tarefa["cod_tarefas"])
-         lista_incluir.append(novo_campo)
-         
-
-
         
-   
+        campo_tarefas.value = ""    
+
+    #Recuperando as tarefas do banco de dados e montando os componentes
+    tarefas_vindas_do_banco_de_dados = model_tarefa.recuperar_tarefas()
+    for tarefa in tarefas_vindas_do_banco_de_dados:
+        novo_campo = Campo_incluir(texto_tarefa=tarefa["tarefa"],
+                                   funcao_excluir=excluir_campo,
+                                   cod_tarefa=tarefa["cod_tarefas"])
+        if tarefa["status"] == "CONCLUÍDO":
+            novo_campo.caixa_selecao.value = True
+        else:
+            novo_campo.caixa_selecao.value = False
+        lista_incluir.append(novo_campo)
+
+
+    button_excluir = ft.FloatingActionButton(icon=ft.Icon(ft.Icons.DELETE_FOREVER,
+                                                          color="#000"),
+                                                      bgcolor="#fff",
+                                                          hover_color="#babaca")
 
     button_incluir = ft.Button(content="Incluir",
                                on_click=adicionar_campo,)
@@ -60,7 +67,7 @@ def main(page:ft.Page):
                           spacing=50)
     
     container = ft.Container(content=linha_começo,
-                             bgcolor="#1adba4",
+                             bgcolor="#ebd29b",
                              padding=30,
                              border_radius=20,
                              width=550,
