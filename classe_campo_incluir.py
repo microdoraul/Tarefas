@@ -26,7 +26,8 @@ class Campo_incluir(ft.Row):
                                      on_click=lambda: self.funcao_excluir(self) )
         
         self.nutton_edit=ft.Button(content="Edit",
-                                   width=100)
+                                   width=100,
+                                   on_click=self.alterar_tarefa)
         
         self.linha_buttons = ft.Column(controls=[self.button_delete, self.nutton_edit])
 
@@ -39,6 +40,8 @@ class Campo_incluir(ft.Row):
         else:
             self.armazem.bgcolor = "#123456"
             model_tarefa.atualizar_status(self.cod_tarefa, "PENDENTE")
+    def alterar_tarefa(self):
+        model_tarefa.atualizar_tarefa(self.cod_tarefa, self.caixa_texto.value)
 
     @property
     def value(self):

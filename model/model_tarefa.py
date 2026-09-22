@@ -43,3 +43,13 @@ def atualizar_status(codigo_tarefa, novo_status):
                     [novo_status, codigo_tarefa])
     conexao.commit()
     conexao.close()
+def atualizar_tarefa(codigo_tarefa,novo_texto):
+    conexao, cursor = conectar_bd()
+    cursor.execute("""
+                update tarefas
+                set tarefa = ?
+                where cod_tarefa = ?;
+                """,
+                [novo_texto, codigo_tarefa])
+conexao.commit()
+conexao.close()  
